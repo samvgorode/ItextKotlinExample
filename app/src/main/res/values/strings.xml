@@ -1,7 +1,9 @@
 <resources>
-    <string name="app_name">ApwLibraryTest</string>
+    <string name="app_name">Pdf</string>
     <string name="pick_image_intent_text">Choose photo resource</string>
     <string name="edit">Edit</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
+    <string name="mistake">Mistake while opening pdf file</string>
+    <string name="mistake_encrypted">PDF file is encrypted</string>
 </resources>

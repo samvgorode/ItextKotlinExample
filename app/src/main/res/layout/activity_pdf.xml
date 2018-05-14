@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,20 +10,34 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:scrollbars="none">
 
         <HorizontalScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
+            android:layout_gravity="center_horizontal"
+            android:scrollbars="none">
 
-            <ImageView
-                android:id="@+id/imgView"
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:contentDescription="@null" />
+                android:layout_height="wrap_content">
 
+                <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+                    android:id="@+id/imgView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:contentDescription="@null" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/floatingActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:clickable="true"
+                    app:srcCompat="@color/colorAccent" />
+            </RelativeLayout>
         </HorizontalScrollView>
 
     </ScrollView>
@@ -40,7 +55,7 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:background="@null"
-            android:text="@string/previous"/>
+            android:text="@string/previous" />
 
         <Button
             android:id="@+id/btnNext"
@@ -50,7 +65,7 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:background="@android:color/white"
-            android:text="@string/next"/>
+            android:text="@string/next" />
 
         <ImageButton
             android:id="@+id/zoomout"
@@ -61,7 +76,7 @@
             android:layout_weight="0.5"
             android:background="@null"
             android:padding="8dp"
-            android:src="@drawable/ic_zoom_in" />
+            android:src="@drawable/ic_zoom_out" />
 
         <ImageButton
             android:id="@+id/zoomin"
@@ -72,7 +87,7 @@
             android:layout_weight="0.5"
             android:background="@null"
             android:padding="8dp"
-            android:src="@drawable/ic_zoom_out" />
+            android:src="@drawable/ic_zoom_in" />
 
     </LinearLayout>
 
