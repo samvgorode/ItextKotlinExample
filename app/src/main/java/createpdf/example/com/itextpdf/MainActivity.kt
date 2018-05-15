@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         checkPermissions()
     }
 
-    fun checkPermissions() {
+    private fun checkPermissions() {
         if (!permissionsGranted(WRITE_STORAGE) || !permissionsGranted(CAMERA) || !permissionsGranted(READ_STORAGE)) {
             ActivityCompat.requestPermissions(this, arrayOf(WRITE_STORAGE, CAMERA), REQUEST_PERMISSION)
         } else {
@@ -40,8 +40,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getAllPdfFiles() {
-        list = FileUtil.getList(Environment.getExternalStorageDirectory().absolutePath)
-        if(adapter==null){
+        list = FileUtil.getListPdfFiles(Environment.getExternalStorageDirectory().absolutePath)
+        if (adapter == null) {
             adapter = Adapter(list)
             recyclerView.adapter = adapter
         } else {
