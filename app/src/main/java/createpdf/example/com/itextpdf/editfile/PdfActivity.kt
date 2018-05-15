@@ -9,12 +9,13 @@ import android.graphics.Matrix
 import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.DisplayMetrics
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
-import com.davemorrissey.labs.subscaleview.ImageSource
 import createpdf.example.com.itextpdf.FileUtil
 import createpdf.example.com.itextpdf.PdfFile
 import createpdf.example.com.itextpdf.R
@@ -29,7 +30,7 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var pdfRenderer: PdfRenderer
     private lateinit var curPage: PdfRenderer.Page
     private lateinit var descriptor: ParcelFileDescriptor
-    private var currentZoomLevel = 5f
+    private var currentZoomLevel = 12f
     private var currentPage = 0
     private val CURRENT_PAGE = "CURRENT_PAGE"
     private lateinit var bitmap: Bitmap
@@ -60,11 +61,11 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
         curPage.close()
         curPage = pdfRenderer.openPage(index)
         val matrix = Matrix()
-        val dpiAdjustedZoomLevel = currentZoomLevel * DisplayMetrics.DENSITY_MEDIUM / resources.displayMetrics.densityDpi
+        val dpiAdjustedZoomLevel = currentZoomLevel * DisplayMetrics.DENSITY_DEFAULT / resources.displayMetrics.densityDpi
         matrix.setScale(dpiAdjustedZoomLevel, dpiAdjustedZoomLevel)
         bitmap = FileUtil.getBitmapFromScreen(this, curPage, currentZoomLevel)
         curPage.render(bitmap, null, matrix, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-        imgView.setImage(ImageSource.bitmap(bitmap))
+        imgView.setImageBitmap(bitmap)
         setupButtons(index)
     }
 
@@ -72,8 +73,6 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
         val pageCount = pdfRenderer.getPageCount()
         btnPrevious.isEnabled = 0 != index
         btnNext.isEnabled = index + 1 < pageCount
-        zoomout.isEnabled = currentZoomLevel != 2f
-        zoomin.isEnabled = currentZoomLevel != 12f
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -90,8 +89,6 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
         when (v) {
             btnPrevious -> changePage(false)
             btnNext -> changePage(true)
-            zoomout -> changeZoom(false)
-            zoomin -> changeZoom(true)
             floatingActionButton -> {
 //                FileUtil.saveCurrentPage(this, imgView)
                 createTempImage()
@@ -102,16 +99,19 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
     @SuppressLint("ClickableViewAccessibility")
     private fun createTempImage() {
         val newView = ImageView(this)
+        newView.setImageResource(R.drawable.ic_zoom_in)
         frameRoot.addView(newView)
-        newView.layoutParams.height = 200
-        newView.layoutParams.width = 200
+        val param = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT)
+        newView.layoutParams = param
         newView.x = 300F
         newView.y = 500F
-        newView.setBackgroundColor(Color.MAGENTA)
-        newView.setOnTouchListener(TouchEventListener(frameRoot))
+        newView.adjustViewBounds = true
+        newView.scaleType = ImageView.ScaleType.FIT_XY
+        newView.setOnTouchListener(TouchEventListener(this))
+        newView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_green_light))
     }
 
-    private fun changePage(toNext : Boolean){
+    private fun changePage(toNext: Boolean) {
         val index = when {
             toNext -> curPage.index + 1
             else -> curPage.index - 1
@@ -119,8 +119,8 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
         displayPage(index)
     }
 
-    private fun changeZoom(zoomPlus: Boolean){
-        when{
+    private fun changeZoom(zoomPlus: Boolean) {
+        when {
             zoomPlus -> ++currentZoomLevel
             else -> --currentZoomLevel
         }
@@ -168,8 +168,6 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
     private fun setOnClickListeners() {
         btnPrevious.setOnClickListener(this)
         btnNext.setOnClickListener(this)
-        zoomout.setOnClickListener(this)
-        zoomin.setOnClickListener(this)
         floatingActionButton.setOnClickListener(this)
     }
 }

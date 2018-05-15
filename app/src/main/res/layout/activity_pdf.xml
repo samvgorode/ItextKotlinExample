@@ -12,28 +12,19 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbars="none">
-
-        <HorizontalScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:scrollbars="none">
-
             <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:id="@+id/relativeRoot">
 
-                <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+                <com.alexvasilkov.gestures.views.GestureImageView
                     android:id="@+id/imgView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:background="@android:color/white"
-                    android:contentDescription="@null" />
+                    android:contentDescription="@null"
+                    android:scaleType="matrix"/>
 
                 <android.support.design.widget.FloatingActionButton
                     android:id="@+id/floatingActionButton"
@@ -42,10 +33,6 @@
                     android:clickable="true"
                     app:srcCompat="@color/colorAccent" />
             </RelativeLayout>
-        </HorizontalScrollView>
-
-    </ScrollView>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -70,28 +57,6 @@
             android:layout_weight="1"
             android:background="@android:color/white"
             android:text="@string/next" />
-
-        <ImageButton
-            android:id="@+id/zoomout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="0dp"
-            android:layout_weight="0.5"
-            android:background="@null"
-            android:padding="8dp"
-            android:src="@drawable/ic_zoom_out" />
-
-        <ImageButton
-            android:id="@+id/zoomin"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="0dp"
-            android:layout_weight="0.5"
-            android:background="@null"
-            android:padding="8dp"
-            android:src="@drawable/ic_zoom_in" />
 
     </LinearLayout>
     </LinearLayout>
