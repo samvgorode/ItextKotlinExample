@@ -2,6 +2,7 @@ package createpdf.example.com.itextpdf
 
 import android.app.Activity
 import android.graphics.*
+import android.graphics.drawable.VectorDrawable
 import android.graphics.pdf.PdfDocument
 import android.graphics.pdf.PdfRenderer
 import android.os.Environment
@@ -11,6 +12,7 @@ import android.widget.Toast
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.*
 
 
 object FileUtil {

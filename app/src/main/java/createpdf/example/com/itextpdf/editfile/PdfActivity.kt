@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.VectorDrawable
 import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
 import android.os.Environment
@@ -38,6 +39,7 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
     private var currentZoomLevel = 12f
     private var currentPage = 0
     private val CURRENT_PAGE = "CURRENT_PAGE"
+    private val tempPdfPath = Environment.getExternalStorageDirectory().absolutePath +"/tempPdfFile.pdf"
     private lateinit var bitmap: Bitmap
     private lateinit var newView: ImageView
 
@@ -95,7 +97,7 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
     @SuppressLint("ClickableViewAccessibility")
     private fun createTempView() {
         newView = ImageView(this)
-        newView.setImageResource(R.drawable.ic_zoom_in)
+        newView.setImageResource(R.drawable.screenshot_5)
         frameRoot.addView(newView)
         val param = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT)
         newView.layoutParams = param
@@ -183,20 +185,18 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun savePage() {
         val reader = PdfReader(path)
-        val readerCopy = PdfReader(path)
-        val stamper = PdfStamper(reader, FileOutputStream(Environment.getExternalStorageDirectory().absolutePath +"/PDFFFFF.pdf"))
-
-        val ims = assets.open("borders.png")
-        val bmp = BitmapFactory.decodeStream(ims)
+        val stamper = PdfStamper(reader, FileOutputStream(tempPdfPath))
+        val bitmapDrawable = newView.drawable as BitmapDrawable
         val stream1 = ByteArrayOutputStream()
+        val bmp = bitmapDrawable.bitmap
         bmp.compress(Bitmap.CompressFormat.PNG, 100, stream1)
-
         val image = Image.getInstance(stream1.toByteArray())
         val stream = PdfImage(image, "", null)
         stream.put(PdfName("ITXT_SpecialId"), PdfName("123456789"))
-        val ref = stamper.getWriter().addToBody(stream)
+        val ref = stamper.writer.addToBody(stream)
         image.directReference = ref.indirectReference
-        image.setAbsolutePosition(newView.x, newView.x)
+        image.setAbsolutePosition(0F, 0F)
+        image.scaleAbsolute(newView.width*newView.scaleX, newView.height*newView.scaleY)
         val over = stamper.getOverContent(1)
         over.addImage(image)
         stamper.close()
@@ -205,10 +205,11 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     fun rewriteFile(){
-		val source = File(Environment.getExternalStorageDirectory().absolutePath +"/PDFFFFF.pdf")
+		val source = File(tempPdfPath)
 		val dest = File(path)
         val fis = FileInputStream(source)
         dest.copyInputStreamToFile(fis)
+        source.delete()
         fis.close()
 	}
 
@@ -218,13 +219,6 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
                 input.copyTo(fileOut)
             }
         }
-    }
-
-    fun getBytesFromDrawable(d: Drawable): ByteArray {
-        val bitmap : Bitmap= Bitmap.createBitmap(d.intrinsicWidth, d.intrinsicHeight, Bitmap.Config.ARGB_8888)
-        val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-        return stream.toByteArray()
     }
 
     fun saveNewPdfFile() {
