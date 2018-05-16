@@ -1,15 +1,14 @@
 package createpdf.example.com.itextpdf.editfile
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
-import android.widget.FrameLayout
-import com.alexvasilkov.gestures.views.GestureImageView
 
 
-class TouchEventListener(context : Context) : ScaleGestureDetector.SimpleOnScaleGestureListener(), View.OnTouchListener {
+class TouchEventListener(context: Context) : ScaleGestureDetector.SimpleOnScaleGestureListener(), View.OnTouchListener {
     private var dX: Float = 0f
     private var dY: Float = 0f
     private var isOneFinger: Boolean = true
@@ -18,7 +17,6 @@ class TouchEventListener(context : Context) : ScaleGestureDetector.SimpleOnScale
     override fun onTouch(v: View, event: MotionEvent): Boolean {
         Companion.view = v
         mScaleDetector.onTouchEvent(event)
-        if (v is GestureImageView) v.controller.onTouch(v, event)
         when (event.getAction() and MotionEvent.ACTION_MASK) {
             MotionEvent.ACTION_DOWN -> {
                 dX = v.x - event.rawX
@@ -29,8 +27,10 @@ class TouchEventListener(context : Context) : ScaleGestureDetector.SimpleOnScale
             }
             MotionEvent.ACTION_POINTER_UP -> {
                 isOneFinger = false
-            }MotionEvent.ACTION_UP -> {
+            }
+            MotionEvent.ACTION_UP -> {
                 isOneFinger = true
+//                (view.parent as ViewManager).removeView(view)
             }
             MotionEvent.ACTION_MOVE -> {
                 if (isOneFinger)
@@ -38,13 +38,11 @@ class TouchEventListener(context : Context) : ScaleGestureDetector.SimpleOnScale
                             .x(event.rawX + dX)
                             .y(event.rawY + dY)
                             .setDuration(0)
-                            .start();
-
+                            .start()
             }
             MotionEvent.ACTION_CANCEL -> {
                 isOneFinger = true
             }
-
         }
         return true
     }
@@ -62,6 +60,7 @@ class TouchEventListener(context : Context) : ScaleGestureDetector.SimpleOnScale
     }
 
     companion object {
+        @SuppressLint("StaticFieldLeak")
         lateinit var view: View
         var mScaleFactor: Float = 1.0F
     }

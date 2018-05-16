@@ -15,17 +15,17 @@ import java.io.IOException
 
 object FileUtil {
 
+    private val list = ArrayList<PdfFile>()
     fun getListPdfFiles(absolutePath: String): ArrayList<PdfFile> {
-        val list = ArrayList<PdfFile>()
         try {
             val file = File(absolutePath)
             val fileList = file.listFiles()
             var fileName: String
             for (f in fileList) {
-                if (f.isDirectory()) {
+                if (f.isDirectory) {
                     getListPdfFiles(f.absolutePath)
                 } else {
-                    fileName = f.getName().toString()
+                    fileName = f.name.toString()
                     if (fileName.endsWith(".pdf")) {
                         list.add(PdfFile(fileName, f.absolutePath))
                     }
@@ -37,7 +37,7 @@ object FileUtil {
         return list
     }
 
-    fun saveCurrentPage(context : Activity, view : View) {
+    fun saveCurrentPage(context: Activity, view: View) {
         val displaymetrics = DisplayMetrics()
         context.windowManager.defaultDisplay.getMetrics(displaymetrics)
         val height = displaymetrics.heightPixels.toFloat()
@@ -65,12 +65,12 @@ object FileUtil {
         )
         document.finishPage(page)
         val dir = File(Environment.getExternalStorageDirectory().absolutePath)
-        if (dir.exists()) {
-            dir.delete()
-        }
-        dir.mkdirs()
         val targetPdf = dir.absolutePath + "/test.pdf"
         val filePath = File(targetPdf)
+        if (filePath.exists()) {
+            filePath.delete()
+        }
+        filePath.mkdirs()
         try {
             document.writeTo(FileOutputStream(filePath))
             Toast.makeText(context, "PDf сохранён в " + filePath.absolutePath, Toast.LENGTH_SHORT).show()
@@ -88,7 +88,7 @@ object FileUtil {
         return b
     }
 
-    fun getBitmapFromScreen(context : Activity, curPage: PdfRenderer.Page, currentZoomLevel : Float) : Bitmap{
+    fun getBitmapFromScreen(context: Activity, curPage: PdfRenderer.Page, currentZoomLevel: Float): Bitmap {
         val newWidth = (context.resources.displayMetrics.widthPixels * curPage.width / 72 * currentZoomLevel / 40).toInt()
         val newHeight = (context.resources.displayMetrics.heightPixels * curPage.height / 72 * currentZoomLevel / 64).toInt()
         return Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)

@@ -12,53 +12,99 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-            <RelativeLayout
+        <RelativeLayout
+            android:id="@+id/relativeRoot"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <com.alexvasilkov.gestures.views.GestureImageView
+                android:id="@+id/imgView"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:id="@+id/relativeRoot">
+                android:layout_height="match_parent"
+                android:background="@android:color/white"
+                android:contentDescription="@null"
+                android:scaleType="matrix" />
 
-                <com.alexvasilkov.gestures.views.GestureImageView
-                    android:id="@+id/imgView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/white"
-                    android:contentDescription="@null"
-                    android:scaleType="matrix"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/colorGray"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
 
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/floatingActionButton"
+                <Button
+                    android:id="@+id/buttonLink"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:clickable="true"
-                    app:srcCompat="@color/colorAccent" />
-            </RelativeLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+                    android:focusable="true"
+                    android:background="@drawable/ic_link"
+                    />
 
-        <Button
-            android:id="@+id/btnPrevious"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
+                <Button
+                    android:id="@+id/buttonCamera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/ic_camera"
+                   />
+
+                <Button
+                    android:id="@+id/buttonGallery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/ic_gallery"
+                    />
+
+                <Button
+                    android:id="@+id/buttonSavePage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/ic_save"
+                    />
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:background="@null"
-            android:text="@string/previous" />
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnNext"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:background="@android:color/white"
-            android:text="@string/next" />
+            <Button
+                android:id="@+id/btnPrevious"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@null"
+                android:text="@string/previous" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/btnNext"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@android:color/white"
+                android:text="@string/next" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>

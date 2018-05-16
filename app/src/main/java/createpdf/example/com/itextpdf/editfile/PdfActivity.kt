@@ -4,10 +4,13 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
+import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
+import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -16,12 +19,14 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
+import com.itextpdf.text.Image
+import com.itextpdf.text.html.HtmlTags.IMG
+import com.itextpdf.text.pdf.*
 import createpdf.example.com.itextpdf.FileUtil
 import createpdf.example.com.itextpdf.PdfFile
 import createpdf.example.com.itextpdf.R
 import kotlinx.android.synthetic.main.activity_pdf.*
-import java.io.File
-import java.io.IOException
+import java.io.*
 
 
 class PdfActivity : AppCompatActivity(), View.OnClickListener {
@@ -34,6 +39,7 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
     private var currentPage = 0
     private val CURRENT_PAGE = "CURRENT_PAGE"
     private lateinit var bitmap: Bitmap
+    private lateinit var newView: ImageView
 
     companion object {
         const val filename = "FILENAME"
@@ -85,20 +91,10 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
         return true
     }
 
-    override fun onClick(v: View?) {
-        when (v) {
-            btnPrevious -> changePage(false)
-            btnNext -> changePage(true)
-            floatingActionButton -> {
-//                FileUtil.saveCurrentPage(this, imgView)
-                createTempImage()
-            }
-        }
-    }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun createTempImage() {
-        val newView = ImageView(this)
+    private fun createTempView() {
+        newView = ImageView(this)
         newView.setImageResource(R.drawable.ic_zoom_in)
         frameRoot.addView(newView)
         val param = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT)
@@ -168,6 +164,70 @@ class PdfActivity : AppCompatActivity(), View.OnClickListener {
     private fun setOnClickListeners() {
         btnPrevious.setOnClickListener(this)
         btnNext.setOnClickListener(this)
-        floatingActionButton.setOnClickListener(this)
+        buttonLink.setOnClickListener(this)
+        buttonCamera.setOnClickListener(this)
+        buttonGallery.setOnClickListener(this)
+        buttonSavePage.setOnClickListener(this)
+    }
+
+    override fun onClick(v: View?) {
+        when (v) {
+            btnPrevious -> changePage(false)
+            btnNext -> changePage(true)
+            buttonLink -> createTempView()
+            buttonCamera -> createTempView()
+            buttonGallery -> createTempView()
+            buttonSavePage -> savePage()
+        }
+    }
+
+    private fun savePage() {
+        val reader = PdfReader(path)
+        val readerCopy = PdfReader(path)
+        val stamper = PdfStamper(reader, FileOutputStream(Environment.getExternalStorageDirectory().absolutePath +"/PDFFFFF.pdf"))
+
+        val ims = assets.open("borders.png")
+        val bmp = BitmapFactory.decodeStream(ims)
+        val stream1 = ByteArrayOutputStream()
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream1)
+
+        val image = Image.getInstance(stream1.toByteArray())
+        val stream = PdfImage(image, "", null)
+        stream.put(PdfName("ITXT_SpecialId"), PdfName("123456789"))
+        val ref = stamper.getWriter().addToBody(stream)
+        image.directReference = ref.indirectReference
+        image.setAbsolutePosition(newView.x, newView.x)
+        val over = stamper.getOverContent(1)
+        over.addImage(image)
+        stamper.close()
+        reader.close()
+        rewriteFile()
+    }
+
+    fun rewriteFile(){
+		val source = File(Environment.getExternalStorageDirectory().absolutePath +"/PDFFFFF.pdf")
+		val dest = File(path)
+        val fis = FileInputStream(source)
+        dest.copyInputStreamToFile(fis)
+        fis.close()
+	}
+
+    fun File.copyInputStreamToFile(inputStream: InputStream) {
+        inputStream.use { input ->
+            this.outputStream().use { fileOut ->
+                input.copyTo(fileOut)
+            }
+        }
+    }
+
+    fun getBytesFromDrawable(d: Drawable): ByteArray {
+        val bitmap : Bitmap= Bitmap.createBitmap(d.intrinsicWidth, d.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        return stream.toByteArray()
+    }
+
+    fun saveNewPdfFile() {
+        FileUtil.saveCurrentPage(this, imgView)
     }
 }
