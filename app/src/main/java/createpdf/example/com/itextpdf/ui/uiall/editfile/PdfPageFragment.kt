@@ -7,14 +7,12 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
 import android.os.Environment
-import android.os.ParcelFileDescriptor
 import android.support.v4.content.ContextCompat
 import android.util.DisplayMetrics
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.Toast
 import com.itextpdf.text.Image
 import com.itextpdf.text.pdf.PdfImage
 import com.itextpdf.text.pdf.PdfName
@@ -27,16 +25,14 @@ import createpdf.example.com.itextpdf.ui.uibase.fragment.BaseFragment
 import kotlinx.android.synthetic.main.activity_pdf.*
 import kotlinx.android.synthetic.main.fragment_pdf_page.*
 import java.io.ByteArrayOutputStream
-import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 
 
 class PdfPageFragment : BaseFragment(), View.OnClickListener {
 
-    private lateinit var pdfRenderer: PdfRenderer
+
     private lateinit var curPage: PdfRenderer.Page
-    private lateinit var descriptor: ParcelFileDescriptor
+
     private var currentZoomLevel = 12f
     private var currentPage = 0
 
@@ -45,13 +41,15 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
     private lateinit var newView: ImageView
     private lateinit var path: String
 
-    fun newInstance(path: String, index: Int): PdfPageFragment {
-        val fragment = PdfPageFragment()
-        val bundle = Bundle()
-        bundle.putString(Constants.FILE_PATH_BUNDLE, path)
-        bundle.putInt(Constants.PAGE_INDEX_BUNDLE, index)
-        fragment.arguments = bundle
-        return fragment
+    companion object {
+        fun newInstance(path: String, index: Int): PdfPageFragment {
+            val fragment = PdfPageFragment()
+            val bundle = Bundle()
+            bundle.putString(Constants.FILE_PATH_BUNDLE, path)
+            bundle.putInt(Constants.PAGE_INDEX_BUNDLE, index)
+            fragment.arguments = bundle
+            return fragment
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,59 +66,28 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
 
     override fun onStart() {
         super.onStart()
-        try {
-            openPdfRenderer()
-            displayPage(currentPage)
-        } catch (e: Exception) {
-            Toast.makeText(context, getString(R.string.mistake_encrypted), Toast.LENGTH_SHORT).show()
-        }
+        displayPage(currentPage)
+//        curPage = pdfRenderer.openPage(currentPage)
+        displayPage(currentPage)
     }
 
     override fun onStop() {
-        try {
-            closePdfRenderer()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
+        curPage.close()
         super.onStop()
     }
 
-    private fun openPdfRenderer() {
-        val file = File(path)
-        try {
-            descriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_WRITE)
-            pdfRenderer = PdfRenderer(descriptor)
-            curPage = pdfRenderer.openPage(currentPage)
-        } catch (e: Exception) {
-            Toast.makeText(context, getString(R.string.mistake), Toast.LENGTH_LONG).show()
-        }
-    }
-
-    @Throws(IOException::class)
-    private fun closePdfRenderer() {
-        curPage.close()
-        pdfRenderer.close()
-        descriptor.close()
-    }
-
     private fun displayPage(index: Int) {
-        if (pdfRenderer.pageCount <= index) return
+//        if (pdfRenderer.pageCount <= index) return
         curPage.close()
-        curPage = pdfRenderer.openPage(index)
+//        curPage = pdfRenderer.openPage(index)
         val matrix = Matrix()
         val dpiAdjustedZoomLevel = currentZoomLevel * DisplayMetrics.DENSITY_DEFAULT / resources.displayMetrics.densityDpi
         matrix.setScale(dpiAdjustedZoomLevel, dpiAdjustedZoomLevel)
         bitmap = FileUtil.getBitmapFromScreen(activity!!, curPage, currentZoomLevel)
         curPage.render(bitmap, null, matrix, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
         imgView.setImageBitmap(bitmap)
-        setupButtons(index)
     }
 
-    fun setupButtons(index: Int) {
-        val pageCount = pdfRenderer.getPageCount()
-        btnPrevious.isEnabled = 0 != index
-        btnNext.isEnabled = index + 1 < pageCount
-    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -207,6 +174,9 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
         image.y = imageView?.y ?: 0F
         image.x = imageView?.x ?: 0F
         frameRoot.addView(image)
+//        this is to scale
+//        image.adjustViewBounds = true
+//        image.scaleType = ImageView.ScaleType.FIT_XY
         image.setOnTouchListener(TouchEventListener(context!!, false))
     }
 
