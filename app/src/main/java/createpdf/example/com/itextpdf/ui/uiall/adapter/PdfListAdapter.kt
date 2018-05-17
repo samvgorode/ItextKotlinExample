@@ -1,14 +1,15 @@
-package createpdf.example.com.itextpdf.adapter
+package createpdf.example.com.itextpdf.ui.uiall.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import createpdf.example.com.itextpdf.viewholder.BaseViewHolder
-import createpdf.example.com.itextpdf.PdfFile
+import createpdf.example.com.itextpdf.ui.uibase.viewholders.BaseViewHolder
+import createpdf.example.com.itextpdf.io.pojo.PdfFile
 import createpdf.example.com.itextpdf.R
-import createpdf.example.com.itextpdf.viewholder.ViewHolder
+import createpdf.example.com.itextpdf.ui.uibase.adapters.BaseRecyclerAdapter
+import createpdf.example.com.itextpdf.ui.uiall.viewholder.ViewHolder
 
 
-class Adapter(var list: ArrayList<PdfFile>) : BaseAdapter<BaseViewHolder<PdfFile>>() {
+class PdfListAdapter(var list: ArrayList<PdfFile>) : BaseRecyclerAdapter<BaseViewHolder<PdfFile>>() {
 
     override fun onBindViewHolder(holder: BaseViewHolder<PdfFile>, position: Int) {
         holder.bindData(list[position])

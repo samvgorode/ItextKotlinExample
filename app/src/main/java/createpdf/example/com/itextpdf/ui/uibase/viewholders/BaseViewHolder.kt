@@ -1,4 +1,4 @@
-package createpdf.example.com.itextpdf.viewholder
+package createpdf.example.com.itextpdf.ui.uibase.viewholders
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView

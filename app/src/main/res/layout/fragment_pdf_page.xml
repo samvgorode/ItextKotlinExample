@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/llButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorGray"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/buttonLink"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@color/colorGray"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_link" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/buttonCamera"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@color/colorGray"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_camera" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/buttonGallery"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@color/colorGray"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_gallery" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/buttonSavePage"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@color/colorGray"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_save" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <com.alexvasilkov.gestures.views.GestureImageView
+        android:id="@+id/imgView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:contentDescription="@null"
+        android:scaleType="matrix" />
+</LinearLayout>

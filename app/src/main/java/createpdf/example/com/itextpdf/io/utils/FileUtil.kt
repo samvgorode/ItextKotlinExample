@@ -1,17 +1,16 @@
-package createpdf.example.com.itextpdf
+package createpdf.example.com.itextpdf.io.utils
 
 import android.app.Activity
 import android.graphics.*
-import android.graphics.drawable.VectorDrawable
 import android.graphics.pdf.PdfDocument
 import android.graphics.pdf.PdfRenderer
 import android.os.Environment
 import android.util.DisplayMetrics
 import android.view.View
 import android.widget.Toast
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import createpdf.example.com.itextpdf.R
+import createpdf.example.com.itextpdf.io.pojo.PdfFile
+import java.io.*
 import java.util.*
 
 
@@ -94,5 +93,22 @@ object FileUtil {
         val newWidth = (context.resources.displayMetrics.widthPixels * curPage.width / 72 * currentZoomLevel / 40).toInt()
         val newHeight = (context.resources.displayMetrics.heightPixels * curPage.height / 72 * currentZoomLevel / 64).toInt()
         return Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
+    }
+
+    fun rewriteFile(sourceStr: String, destStr: String) {
+        val source = File(sourceStr)
+        val dest = File(destStr)
+        val fis = FileInputStream(source)
+        dest.copyInputStreamToFile(fis)
+        source.delete()
+        fis.close()
+    }
+
+    fun File.copyInputStreamToFile(inputStream: InputStream) {
+        inputStream.use { input ->
+            this.outputStream().use { fileOut ->
+                input.copyTo(fileOut)
+            }
+        }
     }
 }

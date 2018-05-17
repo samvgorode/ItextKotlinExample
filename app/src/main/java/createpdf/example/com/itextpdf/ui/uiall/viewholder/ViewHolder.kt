@@ -1,13 +1,14 @@
-package createpdf.example.com.itextpdf.viewholder
+package createpdf.example.com.itextpdf.ui.uiall.viewholder
 
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import createpdf.example.com.itextpdf.PdfFile
+import createpdf.example.com.itextpdf.io.pojo.PdfFile
 import createpdf.example.com.itextpdf.R
-import createpdf.example.com.itextpdf.editfile.PdfActivity
+import createpdf.example.com.itextpdf.ui.uibase.viewholders.BaseViewHolder
+import createpdf.example.com.itextpdf.ui.uiall.editfile.PdfPageActivity
 
 class ViewHolder(parent: ViewGroup, itemView: View?) : BaseViewHolder<PdfFile>(parent, itemView) {
 
@@ -19,6 +20,6 @@ class ViewHolder(parent: ViewGroup, itemView: View?) : BaseViewHolder<PdfFile>(p
     }
 
     fun editFileAction(data: PdfFile) {
-        (getContext() as Activity).startActivity(PdfActivity.getNewIntent(getContext() as Activity, data))
+        (getContext() as Activity).startActivity(PdfPageActivity.getNewIntent(getContext() as Activity, data))
     }
 }

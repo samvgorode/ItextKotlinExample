@@ -1,4 +1,4 @@
-package createpdf.example.com.itextpdf.editfile
+package createpdf.example.com.itextpdf.ui.uiall.editfile
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,15 +8,16 @@ import android.view.ScaleGestureDetector
 import android.view.View
 
 
-class TouchEventListener(context: Context) : ScaleGestureDetector.SimpleOnScaleGestureListener(), View.OnTouchListener {
+class TouchEventListener(context: Context, needZoom : Boolean) : ScaleGestureDetector.SimpleOnScaleGestureListener(), View.OnTouchListener {
     private var dX: Float = 0f
     private var dY: Float = 0f
     private var isOneFinger: Boolean = true
     var mScaleDetector = ScaleGestureDetector(context, MyPinchListener())
+    var needZoom1 = needZoom
 
     override fun onTouch(v: View, event: MotionEvent): Boolean {
         Companion.view = v
-        mScaleDetector.onTouchEvent(event)
+        if(needZoom1)mScaleDetector.onTouchEvent(event)
         when (event.getAction() and MotionEvent.ACTION_MASK) {
             MotionEvent.ACTION_DOWN -> {
                 dX = v.x - event.rawX

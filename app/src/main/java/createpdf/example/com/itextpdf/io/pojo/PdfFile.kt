@@ -1,3 +1,3 @@
-package createpdf.example.com.itextpdf
+package createpdf.example.com.itextpdf.io.pojo
 
 data class PdfFile(val fileName: String = "", val absolutePath: String = "")
