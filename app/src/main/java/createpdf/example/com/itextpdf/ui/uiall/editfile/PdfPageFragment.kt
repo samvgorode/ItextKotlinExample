@@ -9,6 +9,7 @@ import android.os.Environment
 import android.support.v4.content.ContextCompat
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import com.itextpdf.text.Image
@@ -53,40 +54,27 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
     override fun setView() {
         setOnClickTouchListeners()
         newView = ImageView(context)
+        newView.setImageResource(R.drawable.screenshot_5)
+        newView.layoutParams = ViewGroup.LayoutParams(300, 300)
+        newView.x = 200F
+        newView.y = 300F
+        frameRoot.addView(newView)
         path = arguments?.getString(Constants.FILE_PATH_BUNDLE) ?: ""
-        currentPage = arguments?.getInt(Constants.PAGE_INDEX_BUNDLE) ?: 0
+        currentPage = arguments?.getInt(Constants.PAGE_INDEX_BUNDLE) ?: -1
 
     }
 
     override fun onResume() {
         super.onResume()
-        displayPage(currentPage)
+       if(currentPage!=-1) displayPage(currentPage)
     }
 
     fun displayPage(index: Int) {
-        if (pdfRenderer.pageCount <= index) return
-        Descriptor.curPage?.close()
         imgView.setImageBitmap(Descriptor.getBitmap(index, activity as Activity))
     }
 
-//    private fun changePage(toNext: Boolean) {
-//        val index = when {
-//            toNext -> curPage.index + 1
-//            else -> curPage.index - 1
-//        }
-//        displayPage(index)
-//    }
-//
-//    private fun changeZoom(zoomPlus: Boolean) {
-//        when {
-//            zoomPlus -> ++currentZoomLevel
-//            else -> --currentZoomLevel
-//        }
-//        displayPage(curPage.index)
-//    }
-
     private fun addDataToPdf() {
-        val reader = PdfReader(path)
+       /* val reader = PdfReader(path)
         val stamper = PdfStamper(reader, FileOutputStream(tempPdfPath))
         val bitmapDrawable = newView.drawable as BitmapDrawable
         val stream1 = ByteArrayOutputStream()
@@ -103,12 +91,10 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
         over.addImage(image)
         stamper.close()
         reader.close()
-        FileUtil.rewriteFile(tempPdfPath, path)
+        FileUtil.rewriteFile(tempPdfPath, path)*/
     }
 
     private fun setOnClickTouchListeners() {
-//        btnPrevious.setOnClickListener(this)
-//        btnNext.setOnClickListener(this)
         setTouchTopImage(buttonLink)
         setTouchTopImage(buttonCamera)
         setTouchTopImage(buttonGallery)
@@ -142,6 +128,7 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
     @SuppressLint("ClickableViewAccessibility")
     private fun duplicateView(imageView: ImageView?) {
         val image = ImageView(context)
+        image.id = View.generateViewId()
         image.setBackgroundColor(ContextCompat.getColor(context!!, R.color.colorGray))
         image.setImageDrawable(imageView?.drawable)
         image.layoutParams = FrameLayout.LayoutParams(imageView?.width ?: 32, imageView?.height

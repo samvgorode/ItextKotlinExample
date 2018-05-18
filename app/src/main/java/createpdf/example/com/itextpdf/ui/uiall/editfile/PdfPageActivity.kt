@@ -30,7 +30,7 @@ class PdfPageActivity : MvpAppCompatActivity(), PdfPageView {
 
     private lateinit var path: String
     private lateinit var adapter: ViewPagerAdapter
-    private var lastPage: Int = 0
+    private var pageCount: Int = 0
 
 
     companion object {
@@ -56,20 +56,25 @@ class PdfPageActivity : MvpAppCompatActivity(), PdfPageView {
 
     private fun fillAdapter() {
         val fragmentList = ArrayList<Fragment>()
-        fragmentList.add(0, PdfPageFragment.newInstance(path, 0))
-         fragmentList.add(1, PdfPageFragment.newInstance(path, 1))
-         fragmentList.add(2, PdfPageFragment.newInstance(path, 2))
+        // there will be null
+           for (i in 0 until  pageCount) {
+               fragmentList.add(i, PdfPageFragment.newInstance(path, i))
+       }
+
         adapter.setListFragment(fragmentList)
     }
 
     override fun onStart() {
         super.onStart()
         try {
-            Descriptor.openPdfRenderer(path)
+            if(Descriptor.openPdfRenderer(path)){
+                pageCount = Descriptor.pdfRenderer.pageCount
+                fillAdapter()
+            }
         } catch (e: Exception) {
             Toast.makeText(this, getString(R.string.mistake_encrypted), Toast.LENGTH_SHORT).show()
         }
-        fillAdapter()
+
     }
 
     override fun onStop() {
@@ -78,10 +83,8 @@ class PdfPageActivity : MvpAppCompatActivity(), PdfPageView {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        Descriptor.curPage?.close()
         super.onStop()
     }
-
 
     fun getTouchMotionEvent(): MotionEvent {
         val downTime = SystemClock.uptimeMillis()
@@ -100,17 +103,6 @@ class PdfPageActivity : MvpAppCompatActivity(), PdfPageView {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        Descriptor.curPage?.close()
+        finish()
     }
-
-    fun saveNewPdfFile() {
-//        FileUtil.saveCurrentPage(this, imgView)
-    }
-
-//    fun setupButtons(index: Int) {
-//        val pageCount = pdfRenderer.getPageCount()
-//        btnPrevious.isEnabled = 0 != index
-//        btnNext.isEnabled = index + 1 < pageCount
-//    }
 }

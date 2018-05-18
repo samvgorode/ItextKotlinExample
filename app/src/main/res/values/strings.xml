@@ -7,4 +7,5 @@
     <string name="mistake">Mistake while opening pdf file</string>
     <string name="mistake_encrypted">PDF file is encrypted</string>
     <string name="error_saving_string">Error while saving PDF file</string>
+    <string name="error_while_opening_pdf">Error while opening PDF</string>
 </resources>
