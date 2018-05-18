@@ -1,6 +1,5 @@
 package createpdf.example.com.itextpdf.ui.uiall
 
-import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
@@ -10,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager
 import com.arellomobile.mvp.MvpAppCompatActivity
 import createpdf.example.com.itextpdf.App
 import createpdf.example.com.itextpdf.R
+import createpdf.example.com.itextpdf.dagger.ForApplication
 import createpdf.example.com.itextpdf.io.pojo.PdfFile
 import createpdf.example.com.itextpdf.io.utils.FileUtil
 import createpdf.example.com.itextpdf.ui.uiall.adapter.PdfListAdapter
@@ -20,7 +20,8 @@ import javax.inject.Inject
 class MainActivity : MvpAppCompatActivity() {
 
     @Inject
-    lateinit var app : Application
+    @field:ForApplication
+    lateinit var app: App
 
     private val REQUEST_PERMISSION = 101
     private val WRITE_STORAGE = android.Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -33,11 +34,7 @@ class MainActivity : MvpAppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         checkPermissions()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        App.component.inject(this)
+        (application as App).component.inject(this)
         val cont = app.applicationContext
     }
 

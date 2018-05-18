@@ -2,23 +2,23 @@ package createpdf.example.com.itextpdf.ui.uiall.editfile
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
-import android.os.ParcelFileDescriptor
 import android.os.SystemClock
 import android.support.v4.app.Fragment
+import android.support.v4.view.ViewPager
 import android.view.MotionEvent
 import android.widget.Toast
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
+import createpdf.example.com.itextpdf.App
 import createpdf.example.com.itextpdf.R
 import createpdf.example.com.itextpdf.io.pojo.PdfFile
 import createpdf.example.com.itextpdf.io.utils.Constants
 import createpdf.example.com.itextpdf.ui.presenters.PdfPagePresenter
 import createpdf.example.com.itextpdf.ui.uiall.adapter.ViewPagerAdapter
+import createpdf.example.com.itextpdf.ui.uiall.editfile.Descriptor.closePdfRenderer
 import createpdf.example.com.itextpdf.ui.uiinterfaces.PdfPageView
 import kotlinx.android.synthetic.main.activity_pdf.*
-import java.io.File
 import java.io.IOException
 import java.util.*
 
@@ -30,8 +30,7 @@ class PdfPageActivity : MvpAppCompatActivity(), PdfPageView {
 
     private lateinit var path: String
     private lateinit var adapter: ViewPagerAdapter
-    private lateinit var descriptor: ParcelFileDescriptor
-    private lateinit var pdfRenderer: PdfRenderer
+    private var lastPage: Int = 0
 
 
     companion object {
@@ -47,28 +46,30 @@ class PdfPageActivity : MvpAppCompatActivity(), PdfPageView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pdf)
+        (application as App).component.inject(this)
         title = intent.getStringExtra(Constants.FILENAME_INTENT_EXTRA)
         path = intent.getStringExtra(Constants.FILEPATH_INTENT_EXTRA)
         adapter = ViewPagerAdapter(supportFragmentManager)
-        fillAdapter()
         pager.adapter = adapter
+        pager.offscreenPageLimit = 3
     }
 
     private fun fillAdapter() {
         val fragmentList = ArrayList<Fragment>()
         fragmentList.add(0, PdfPageFragment.newInstance(path, 0))
-        fragmentList.add(1, PdfPageFragment.newInstance(path, 1))
-        fragmentList.add(2, PdfPageFragment.newInstance(path, 2))
+         fragmentList.add(1, PdfPageFragment.newInstance(path, 1))
+         fragmentList.add(2, PdfPageFragment.newInstance(path, 2))
         adapter.setListFragment(fragmentList)
     }
 
     override fun onStart() {
         super.onStart()
         try {
-            openPdfRenderer()
+            Descriptor.openPdfRenderer(path)
         } catch (e: Exception) {
             Toast.makeText(this, getString(R.string.mistake_encrypted), Toast.LENGTH_SHORT).show()
         }
+        fillAdapter()
     }
 
     override fun onStop() {
@@ -77,25 +78,10 @@ class PdfPageActivity : MvpAppCompatActivity(), PdfPageView {
         } catch (e: IOException) {
             e.printStackTrace()
         }
+        Descriptor.curPage?.close()
         super.onStop()
     }
 
-    private fun openPdfRenderer() {
-        val file = File(path)
-        try {
-            descriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_WRITE)
-            pdfRenderer = PdfRenderer(descriptor)
-
-        } catch (e: Exception) {
-            Toast.makeText(this, getString(R.string.mistake), Toast.LENGTH_LONG).show()
-        }
-    }
-
-    @Throws(IOException::class)
-    private fun closePdfRenderer() {
-        pdfRenderer.close()
-        descriptor.close()
-    }
 
     fun getTouchMotionEvent(): MotionEvent {
         val downTime = SystemClock.uptimeMillis()
@@ -111,6 +97,11 @@ class PdfPageActivity : MvpAppCompatActivity(), PdfPageView {
                 y,
                 metaState
         )
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        Descriptor.curPage?.close()
     }
 
     fun saveNewPdfFile() {

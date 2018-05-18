@@ -1,6 +1,7 @@
 package createpdf.example.com.itextpdf.io.utils
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.*
 import android.graphics.pdf.PdfDocument
 import android.graphics.pdf.PdfRenderer
@@ -89,7 +90,7 @@ object FileUtil {
         return b
     }
 
-    fun getBitmapFromScreen(context: Activity, curPage: PdfRenderer.Page, currentZoomLevel: Float): Bitmap {
+    fun getBitmapFromScreen(context: Context, curPage: PdfRenderer.Page, currentZoomLevel: Float): Bitmap {
         val newWidth = (context.resources.displayMetrics.widthPixels * curPage.width / 72 * currentZoomLevel / 40).toInt()
         val newHeight = (context.resources.displayMetrics.heightPixels * curPage.height / 72 * currentZoomLevel / 64).toInt()
         return Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)

@@ -1,14 +1,12 @@
 package createpdf.example.com.itextpdf.ui.uiall.editfile
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
 import android.os.Environment
 import android.support.v4.content.ContextCompat
-import android.util.DisplayMetrics
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
@@ -21,8 +19,8 @@ import com.itextpdf.text.pdf.PdfStamper
 import createpdf.example.com.itextpdf.R
 import createpdf.example.com.itextpdf.io.utils.Constants
 import createpdf.example.com.itextpdf.io.utils.FileUtil
+import createpdf.example.com.itextpdf.ui.uiall.editfile.Descriptor.pdfRenderer
 import createpdf.example.com.itextpdf.ui.uibase.fragment.BaseFragment
-import kotlinx.android.synthetic.main.activity_pdf.*
 import kotlinx.android.synthetic.main.fragment_pdf_page.*
 import java.io.ByteArrayOutputStream
 import java.io.FileOutputStream
@@ -30,16 +28,11 @@ import java.io.FileOutputStream
 
 class PdfPageFragment : BaseFragment(), View.OnClickListener {
 
-
-    private lateinit var curPage: PdfRenderer.Page
-
-    private var currentZoomLevel = 12f
     private var currentPage = 0
-
-    private lateinit var bitmap: Bitmap
     private val tempPdfPath = Environment.getExternalStorageDirectory().absolutePath + "/tempPdfFile.pdf"
     private lateinit var newView: ImageView
     private lateinit var path: String
+
 
     companion object {
         fun newInstance(path: String, index: Int): PdfPageFragment {
@@ -55,60 +48,42 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setLayout(R.layout.fragment_pdf_page)
-        currentPage = savedInstanceState?.getInt(Constants.CURRENT_PAGE, 0) ?: 0
     }
 
     override fun setView() {
         setOnClickTouchListeners()
         newView = ImageView(context)
         path = arguments?.getString(Constants.FILE_PATH_BUNDLE) ?: ""
+        currentPage = arguments?.getInt(Constants.PAGE_INDEX_BUNDLE) ?: 0
+
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         displayPage(currentPage)
-//        curPage = pdfRenderer.openPage(currentPage)
-        displayPage(currentPage)
     }
 
-    override fun onStop() {
-        curPage.close()
-        super.onStop()
+    fun displayPage(index: Int) {
+        if (pdfRenderer.pageCount <= index) return
+        Descriptor.curPage?.close()
+        imgView.setImageBitmap(Descriptor.getBitmap(index, activity as Activity))
     }
 
-    private fun displayPage(index: Int) {
-//        if (pdfRenderer.pageCount <= index) return
-        curPage.close()
-//        curPage = pdfRenderer.openPage(index)
-        val matrix = Matrix()
-        val dpiAdjustedZoomLevel = currentZoomLevel * DisplayMetrics.DENSITY_DEFAULT / resources.displayMetrics.densityDpi
-        matrix.setScale(dpiAdjustedZoomLevel, dpiAdjustedZoomLevel)
-        bitmap = FileUtil.getBitmapFromScreen(activity!!, curPage, currentZoomLevel)
-        curPage.render(bitmap, null, matrix, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-        imgView.setImageBitmap(bitmap)
-    }
-
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt(Constants.CURRENT_PAGE, curPage.index)
-    }
-
-    private fun changePage(toNext: Boolean) {
-        val index = when {
-            toNext -> curPage.index + 1
-            else -> curPage.index - 1
-        }
-        displayPage(index)
-    }
-
-    private fun changeZoom(zoomPlus: Boolean) {
-        when {
-            zoomPlus -> ++currentZoomLevel
-            else -> --currentZoomLevel
-        }
-        displayPage(curPage.index)
-    }
+//    private fun changePage(toNext: Boolean) {
+//        val index = when {
+//            toNext -> curPage.index + 1
+//            else -> curPage.index - 1
+//        }
+//        displayPage(index)
+//    }
+//
+//    private fun changeZoom(zoomPlus: Boolean) {
+//        when {
+//            zoomPlus -> ++currentZoomLevel
+//            else -> --currentZoomLevel
+//        }
+//        displayPage(curPage.index)
+//    }
 
     private fun addDataToPdf() {
         val reader = PdfReader(path)
@@ -124,7 +99,7 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
         image.directReference = ref.indirectReference
         image.setAbsolutePosition(0F, 0F)
         image.scaleAbsolute(newView.width * newView.scaleX, newView.height * newView.scaleY)
-        val over = stamper.getOverContent(curPage.index)
+        val over = stamper.getOverContent(currentPage)
         over.addImage(image)
         stamper.close()
         reader.close()
@@ -132,8 +107,8 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun setOnClickTouchListeners() {
-        btnPrevious.setOnClickListener(this)
-        btnNext.setOnClickListener(this)
+//        btnPrevious.setOnClickListener(this)
+//        btnNext.setOnClickListener(this)
         setTouchTopImage(buttonLink)
         setTouchTopImage(buttonCamera)
         setTouchTopImage(buttonGallery)
@@ -142,8 +117,8 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v) {
-            btnPrevious -> changePage(false)
-            btnNext -> changePage(true)
+//            btnPrevious -> changePage(false)
+//            btnNext -> changePage(true)
             buttonSavePage -> addDataToPdf()
         }
     }
@@ -179,5 +154,6 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
 //        image.scaleType = ImageView.ScaleType.FIT_XY
         image.setOnTouchListener(TouchEventListener(context!!, false))
     }
+
 
 }
