@@ -1,30 +1,23 @@
 package createpdf.example.com.itextpdf.ui.uiall.editfile
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Environment
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
-import com.itextpdf.text.Image
-import com.itextpdf.text.pdf.PdfImage
-import com.itextpdf.text.pdf.PdfName
-import com.itextpdf.text.pdf.PdfReader
-import com.itextpdf.text.pdf.PdfStamper
+import com.qoppa.android.pdf.annotations.Link
+import com.qoppa.android.pdfProcess.PDFDocument
+import com.qoppa.android.pdfViewer.actions.Action
+import com.qoppa.android.pdfViewer.actions.URLAction
 import createpdf.example.com.itextpdf.R
 import createpdf.example.com.itextpdf.io.utils.Constants
-import createpdf.example.com.itextpdf.io.utils.FileUtil
-import createpdf.example.com.itextpdf.ui.uiall.editfile.Descriptor.pdfRenderer
 import createpdf.example.com.itextpdf.ui.uibase.fragment.BaseFragment
 import kotlinx.android.synthetic.main.fragment_pdf_page.*
-import java.io.ByteArrayOutputStream
-import java.io.FileOutputStream
+import java.util.*
 
 
 class PdfPageFragment : BaseFragment(), View.OnClickListener {
@@ -54,44 +47,33 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
     override fun setView() {
         setOnClickTouchListeners()
         newView = ImageView(context)
-        newView.setImageResource(R.drawable.screenshot_5)
+        /*newView.setImageResource(R.drawable.screenshot_5)
         newView.layoutParams = ViewGroup.LayoutParams(300, 300)
         newView.x = 200F
         newView.y = 300F
-        frameRoot.addView(newView)
+        frameRoot.addView(newView)*/
         path = arguments?.getString(Constants.FILE_PATH_BUNDLE) ?: ""
         currentPage = arguments?.getInt(Constants.PAGE_INDEX_BUNDLE) ?: -1
-
+        showQoppaView()
     }
 
     override fun onResume() {
         super.onResume()
-       if(currentPage!=-1) displayPage(currentPage)
+        if (currentPage != -1) displayPage(currentPage)
+    }
+
+    private fun showQoppaView(){
+       /*
+        val viewer = QPDFNotesView(context)
+        viewer.activity = activity
+        viewer.loadDocument(path)
+        frameRoot.addView(viewer)
+        replaceLink()
+        */
     }
 
     fun displayPage(index: Int) {
-        imgView.setImageBitmap(Descriptor.getBitmap(index, activity as Activity))
-    }
-
-    private fun addDataToPdf() {
-       /* val reader = PdfReader(path)
-        val stamper = PdfStamper(reader, FileOutputStream(tempPdfPath))
-        val bitmapDrawable = newView.drawable as BitmapDrawable
-        val stream1 = ByteArrayOutputStream()
-        val bmp = bitmapDrawable.bitmap
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream1)
-        val image = Image.getInstance(stream1.toByteArray())
-        val stream = PdfImage(image, "", null)
-        stream.put(PdfName("ITXT_SpecialId"), PdfName("123456789"))
-        val ref = stamper.writer.addToBody(stream)
-        image.directReference = ref.indirectReference
-        image.setAbsolutePosition(0F, 0F)
-        image.scaleAbsolute(newView.width * newView.scaleX, newView.height * newView.scaleY)
-        val over = stamper.getOverContent(currentPage)
-        over.addImage(image)
-        stamper.close()
-        reader.close()
-        FileUtil.rewriteFile(tempPdfPath, path)*/
+        imgView.setImageBitmap(Descriptor.getBitmap(index))
     }
 
     private fun setOnClickTouchListeners() {
@@ -103,8 +85,6 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v) {
-//            btnPrevious -> changePage(false)
-//            btnNext -> changePage(true)
             buttonSavePage -> addDataToPdf()
         }
     }
@@ -140,6 +120,53 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
 //        image.adjustViewBounds = true
 //        image.scaleType = ImageView.ScaleType.FIT_XY
         image.setOnTouchListener(TouchEventListener(context!!, false))
+    }
+
+    private fun replaceLink(){
+        try {
+            val pdfDoc = PDFDocument(path, null)
+            val page = pdfDoc.getPage(0)
+            val annotations = pdfDoc.getPage(0).annotations
+            val action = URLAction("www.qoppa.com")
+            val actions = Vector<Action>()
+            actions.add(action)
+            if (annotations == null) {
+                Log.e("", "document does not contain annotations")
+            } else {
+                //print current values of all textfields, set the value of "field1"
+                for (i in 0 until annotations.size) {
+                    val field = annotations[i]
+                    if (field is Link) {
+                        if(field.getActions(page)[0].actionTypeDesc == "Open a web link")
+                            field.setActions(actions, page)
+                    }
+                }
+            }
+            pdfDoc.saveDocument()
+        } catch (t: Throwable) {
+            Log.e("", Log.getStackTraceString(t))
+        }
+    }
+
+    private fun addDataToPdf() {
+        /* val reader = PdfReader(path)
+         val stamper = PdfStamper(reader, FileOutputStream(tempPdfPath))
+         val bitmapDrawable = newView.drawable as BitmapDrawable
+         val stream1 = ByteArrayOutputStream()
+         val bmp = bitmapDrawable.bitmap
+         bmp.compress(Bitmap.CompressFormat.PNG, 100, stream1)
+         val image = Image.getInstance(stream1.toByteArray())
+         val stream = PdfImage(image, "", null)
+         stream.put(PdfName("ITXT_SpecialId"), PdfName("123456789"))
+         val ref = stamper.writer.addToBody(stream)
+         image.directReference = ref.indirectReference
+         image.setAbsolutePosition(0F, 0F)
+         image.scaleAbsolute(newView.width * newView.scaleX, newView.height * newView.scaleY)
+         val over = stamper.getOverContent(currentPage)
+         over.addImage(image)
+         stamper.close()
+         reader.close()
+         FileUtil.rewriteFile(tempPdfPath, path)*/
     }
 
 

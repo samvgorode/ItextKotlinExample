@@ -42,8 +42,7 @@ class MainActivity : MvpAppCompatActivity() {
         if (!permissionsGranted(WRITE_STORAGE) || !permissionsGranted(CAMERA) || !permissionsGranted(READ_STORAGE)) {
             ActivityCompat.requestPermissions(this, arrayOf(WRITE_STORAGE, CAMERA), REQUEST_PERMISSION)
         } else {
-            initRecycler()
-            getAllPdfFiles()
+            fillRecyclerView()
         }
     }
 
@@ -64,8 +63,14 @@ class MainActivity : MvpAppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode) {
             REQUEST_PERMISSION -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fillRecyclerView()
             }
         }
+    }
+
+    private fun fillRecyclerView() {
+        initRecycler()
+        getAllPdfFiles()
     }
 
     private fun permissionsGranted(permisssion: String): Boolean {

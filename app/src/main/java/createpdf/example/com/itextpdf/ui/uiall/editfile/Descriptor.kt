@@ -1,11 +1,8 @@
 package createpdf.example.com.itextpdf.ui.uiall.editfile
 
-import android.app.Activity
 import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
-import android.util.DisplayMetrics
 import android.util.Log
 import createpdf.example.com.itextpdf.io.utils.FileUtil
 import java.io.File
@@ -49,18 +46,11 @@ object Descriptor {
         }
     }
 
-    /**
-     * currentZoomLevel causes slow work if it is big
-     * */
-    fun getBitmap(index: Int, activity: Activity): Bitmap {
-        val currentZoomLevel = 5F
+    fun getBitmap(index: Int): Bitmap {
         curPage.close()
         curPage = pdfRenderer.openPage(index)
-        val matrix = Matrix()
-        val dpiAdjustedZoomLevel = currentZoomLevel * DisplayMetrics.DENSITY_DEFAULT / activity.resources.displayMetrics.densityDpi
-        matrix.setScale(dpiAdjustedZoomLevel, dpiAdjustedZoomLevel)
-        val bitmap = FileUtil.getBitmapFromScreen(activity, curPage!!, currentZoomLevel)
-        curPage.render(bitmap, null, matrix, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+        val bitmap = FileUtil.getBitmapFromScreen(curPage)
+        curPage.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
         return bitmap
     }
 }

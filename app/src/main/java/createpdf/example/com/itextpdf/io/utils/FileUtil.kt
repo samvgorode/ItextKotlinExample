@@ -90,10 +90,8 @@ object FileUtil {
         return b
     }
 
-    fun getBitmapFromScreen(context: Context, curPage: PdfRenderer.Page, currentZoomLevel: Float): Bitmap {
-        val newWidth = (context.resources.displayMetrics.widthPixels * curPage.width / 72 * currentZoomLevel / 40).toInt()
-        val newHeight = (context.resources.displayMetrics.heightPixels * curPage.height / 72 * currentZoomLevel / 64).toInt()
-        return Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
+    fun getBitmapFromScreen(curPage: PdfRenderer.Page): Bitmap {
+        return Bitmap.createBitmap(curPage.width, curPage.height, Bitmap.Config.ARGB_8888)
     }
 
     fun rewriteFile(sourceStr: String, destStr: String) {
