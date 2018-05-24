@@ -6,6 +6,7 @@ import android.os.Environment
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import com.arellomobile.mvp.MvpAppCompatActivity
 import createpdf.example.com.itextpdf.App
 import createpdf.example.com.itextpdf.R
@@ -46,7 +47,7 @@ class MainActivity : MvpAppCompatActivity() {
     }
 
     private fun initRecycler() {
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = LinearLayoutManager(this) as RecyclerView.LayoutManager?
     }
 
     private fun getAllPdfFiles() {

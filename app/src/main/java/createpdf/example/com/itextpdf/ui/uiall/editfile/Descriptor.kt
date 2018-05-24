@@ -57,23 +57,21 @@ object Descriptor {
 
     fun getTwoBitmaps(index: Int): Bitmap {
         //todo check num pages to correct indexes
+        var pagecount = pdfRenderer.pageCount
         val list = ArrayList<Bitmap>()
         curPage = pdfRenderer.openPage(index)
         val bitmap = FileUtil.getBitmapFromScreen(curPage)
         curPage.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
         curPage.close()
-        var index1 = 0
-        if(index == 0) index1 = 1
-        else {
-            if(index%2==0) index1 = index - 1
-            else index1 = index + 1
-        }
-        curPage1 = pdfRenderer.openPage(index1)
-        val bitmap1 = FileUtil.getBitmapFromScreen(curPage1)
-        curPage1.render(bitmap1, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-        curPage1.close()
         list.add(0, bitmap)
-        list.add(1, bitmap1)
+        var index1 = index + 1
+        if(index1 < pagecount) {
+            curPage1 = pdfRenderer.openPage(index1)
+            val bitmap1 = FileUtil.getBitmapFromScreen(curPage1)
+            curPage1.render(bitmap1, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+            curPage1.close()
+            list.add(1, bitmap1)
+        }
         return FileUtil.combineImageIntoOne(list)
     }
 }

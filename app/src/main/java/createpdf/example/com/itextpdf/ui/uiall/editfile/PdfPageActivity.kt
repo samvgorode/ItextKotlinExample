@@ -65,7 +65,6 @@ class PdfPageActivity : MvpAppCompatActivity(), PdfPageView {
            for (i in 0 until  pageCount) {
                fragmentList.add(i, PdfPageFragment.newInstance(path, i))
        }
-
         adapter.setListFragment(fragmentList)
     }
 
