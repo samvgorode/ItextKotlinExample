@@ -1,11 +1,9 @@
 package createpdf.example.com.itextpdf.dagger
 
-import android.os.ParcelFileDescriptor
 import createpdf.example.com.itextpdf.App
+import createpdf.example.com.itextpdf.io.manager.OrientationManager
 import dagger.Module
 import dagger.Provides
-import java.io.File
-import javax.inject.Named
 import javax.inject.Singleton
 
 
@@ -16,4 +14,8 @@ class AppModule(private val app: App) {
     @Singleton
     @ForApplication
     fun provideApp(): App = app
+
+    @Provides
+    @Singleton
+    fun provideOrientationManager() = OrientationManager(app.applicationContext)
 }

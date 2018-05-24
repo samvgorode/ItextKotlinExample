@@ -18,7 +18,13 @@ import java.util.*
 object FileUtil {
 
     private val list = ArrayList<PdfFile>()
+
+    fun clearList(){
+        list.clear()
+    }
+
     fun getListPdfFiles(absolutePath: String): ArrayList<PdfFile> {
+
         try {
             val file = File(absolutePath)
             val fileList = file.listFiles()

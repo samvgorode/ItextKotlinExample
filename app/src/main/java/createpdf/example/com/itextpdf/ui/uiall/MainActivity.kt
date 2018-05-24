@@ -27,15 +27,14 @@ class MainActivity : MvpAppCompatActivity() {
     private val WRITE_STORAGE = android.Manifest.permission.WRITE_EXTERNAL_STORAGE
     private val READ_STORAGE = android.Manifest.permission.READ_EXTERNAL_STORAGE
     private val CAMERA = android.Manifest.permission.CAMERA
-    lateinit var list: ArrayList<PdfFile>
+    var list: ArrayList<PdfFile>? = null
     var pdfListAdapter: PdfListAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         checkPermissions()
-        (application as App).component.inject(this)
-        val cont = app.applicationContext
+        App.component.inject(this)
     }
 
     private fun checkPermissions() {
@@ -51,12 +50,15 @@ class MainActivity : MvpAppCompatActivity() {
     }
 
     private fun getAllPdfFiles() {
+        list?.clear()
+        FileUtil.clearList()
         list = FileUtil.getListPdfFiles(Environment.getExternalStorageDirectory().absolutePath)
         if (pdfListAdapter == null) {
-            pdfListAdapter = PdfListAdapter(list)
+            pdfListAdapter = PdfListAdapter()
+            pdfListAdapter?.updateAdapter(list!!)
             recyclerView.adapter = pdfListAdapter
         } else {
-            pdfListAdapter?.updateAdapter(list)
+            pdfListAdapter?.updateAdapter(list!!)
         }
     }
 

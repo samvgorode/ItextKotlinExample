@@ -33,9 +33,9 @@ class ViewPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
 
     fun setListFragment(fragmentList: List<Fragment>) {
         if(!fragmentList.isEmpty()){
+            mFragmentList.clear()
             mFragmentList.addAll(fragmentList)
             notifyDataSetChanged()
         }
-
     }
 }

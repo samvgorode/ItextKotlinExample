@@ -14,10 +14,12 @@ import com.qoppa.android.pdfProcess.PDFDocument
 import com.qoppa.android.pdfViewer.actions.Action
 import com.qoppa.android.pdfViewer.actions.URLAction
 import createpdf.example.com.itextpdf.R
+import createpdf.example.com.itextpdf.io.manager.OrientationManager
 import createpdf.example.com.itextpdf.io.utils.Constants
 import createpdf.example.com.itextpdf.ui.uibase.fragment.BaseFragment
 import kotlinx.android.synthetic.main.fragment_pdf_page.*
 import java.util.*
+import javax.inject.Inject
 
 
 class PdfPageFragment : BaseFragment(), View.OnClickListener {
@@ -46,12 +48,6 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
 
     override fun setView() {
         setOnClickTouchListeners()
-        newView = ImageView(context)
-        /*newView.setImageResource(R.drawable.screenshot_5)
-        newView.layoutParams = ViewGroup.LayoutParams(300, 300)
-        newView.x = 200F
-        newView.y = 300F
-        frameRoot.addView(newView)*/
         path = arguments?.getString(Constants.FILE_PATH_BUNDLE) ?: ""
         currentPage = arguments?.getInt(Constants.PAGE_INDEX_BUNDLE) ?: -1
         showQoppaView()
@@ -59,17 +55,30 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        if (currentPage != -1) displayPage(currentPage)
+        if (!orientationManager.isActive()) {
+            orientationManager.setListener(listener = object : OrientationManager.VerticalListener {
+                override fun changed(isVertical: Boolean) {
+                    if (isVertical ) {
+                        if(currentPage != -1)displayPage(currentPage)
+                    } else {
+                        if(currentPage != -1)displayTwoPages(currentPage)
+                    }
+                }
+            })
+            orientationManager.enable()
+        }
+
     }
 
-    private fun showQoppaView(){
-       /*
-        val viewer = QPDFNotesView(context)
-        viewer.activity = activity
-        viewer.loadDocument(path)
-        frameRoot.addView(viewer)
-        replaceLink()
-        */
+    private fun displayTwoPages(index: Int) {
+        if(index%2==0) {
+            imgView.setImageBitmap(Descriptor.getTwoBitmaps(index)[0])
+            imgView1.setImageBitmap(Descriptor.getTwoBitmaps(index)[1])
+        }else {
+            imgView.setImageBitmap(Descriptor.getTwoBitmaps(index)[1])
+            imgView1.setImageBitmap(Descriptor.getTwoBitmaps(index)[0])
+        }
+//
     }
 
     fun displayPage(index: Int) {
@@ -122,7 +131,7 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
         image.setOnTouchListener(TouchEventListener(context!!, false))
     }
 
-    private fun replaceLink(){
+    private fun replaceLink() {
         try {
             val pdfDoc = PDFDocument(path, null)
             val page = pdfDoc.getPage(0)
@@ -137,7 +146,7 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
                 for (i in 0 until annotations.size) {
                     val field = annotations[i]
                     if (field is Link) {
-                        if(field.getActions(page)[0].actionTypeDesc == "Open a web link")
+                        if (field.getActions(page)[0].actionTypeDesc == "Open a web link")
                             field.setActions(actions, page)
                     }
                 }
@@ -149,8 +158,14 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun addDataToPdf() {
-        /* val reader = PdfReader(path)
-         val stamper = PdfStamper(reader, FileOutputStream(tempPdfPath))
+        /*newView = ImageView(context)
+        newView.setImageResource(R.drawable.screenshot_5)
+        newView.layoutParams = ViewGroup.LayoutParams(300, 300)
+        newView.x = 200F
+        newView.y = 300F
+        frameRoot.addView(newView)
+        val reader = PdfReader(path)
+         val stamper = PStamper(reader, FileOutputStream(tempPdfPath))
          val bitmapDrawable = newView.drawable as BitmapDrawable
          val stream1 = ByteArrayOutputStream()
          val bmp = bitmapDrawable.bitmap
@@ -169,5 +184,14 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
          FileUtil.rewriteFile(tempPdfPath, path)*/
     }
 
+    private fun showQoppaView() {
+        /*
+         val viewer = QPDFNotesView(context)
+         viewer.activity = activity
+         viewer.loadDocument(path)
+         frameRoot.addView(viewer)
+         replaceLink()
+         */
+    }
 
 }

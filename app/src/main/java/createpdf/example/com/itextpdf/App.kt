@@ -8,9 +8,9 @@ import javax.inject.Inject
 
 class App : MvpApplication() {
 
-    @Inject
-    lateinit var component: AppComponent
-
+    companion object {
+        @JvmStatic lateinit var component: AppComponent
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -20,4 +20,5 @@ class App : MvpApplication() {
                 .build()
         component.inject(this)
     }
+
 }

@@ -46,7 +46,7 @@ class PdfPageActivity : MvpAppCompatActivity(), PdfPageView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pdf)
-        (application as App).component.inject(this)
+        App.component.inject(this)
         title = intent.getStringExtra(Constants.FILENAME_INTENT_EXTRA)
         path = intent.getStringExtra(Constants.FILEPATH_INTENT_EXTRA)
         adapter = ViewPagerAdapter(supportFragmentManager)
@@ -84,22 +84,6 @@ class PdfPageActivity : MvpAppCompatActivity(), PdfPageView {
             e.printStackTrace()
         }
         super.onStop()
-    }
-
-    fun getTouchMotionEvent(): MotionEvent {
-        val downTime = SystemClock.uptimeMillis()
-        val eventTime = SystemClock.uptimeMillis() + 50
-        val x = 0.0f
-        val y = 0.0f
-        val metaState = 0
-        return MotionEvent.obtain(
-                downTime,
-                eventTime,
-                MotionEvent.ACTION_UP,
-                x,
-                y,
-                metaState
-        )
     }
 
     override fun onBackPressed() {

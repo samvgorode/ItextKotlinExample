@@ -4,6 +4,7 @@ import createpdf.example.com.itextpdf.App
 import createpdf.example.com.itextpdf.ui.uiall.MainActivity
 import createpdf.example.com.itextpdf.ui.uiall.editfile.PdfPageActivity
 import createpdf.example.com.itextpdf.ui.uiall.editfile.PdfPageFragment
+import createpdf.example.com.itextpdf.ui.uibase.fragment.BaseFragment
 import dagger.Component
 import javax.inject.Singleton
 
@@ -15,4 +16,5 @@ interface AppComponent {
     fun inject(app: App)
     fun inject(activity: MainActivity)
     fun inject(activity: PdfPageActivity)
+    fun inject(fragment: BaseFragment)
 }
