@@ -23,8 +23,6 @@ object Descriptor {
         try {
             descriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_WRITE)
             pdfRenderer = PdfRenderer(descriptor)
-//            curPage = pdfRenderer.openPage(0)
-//            curPage1 = pdfRenderer.openPage(1)
             descriptorCreated = true
             return true
         } catch (e: Exception) {
@@ -37,8 +35,6 @@ object Descriptor {
     fun closePdfRenderer() {
         if (descriptorCreated) {
             try {
-//                curPage.close()
-//                curPage1.close()
                 pdfRenderer.close()
                 descriptor.close()
             } catch (e: IOException) {
@@ -47,6 +43,9 @@ object Descriptor {
         }
     }
 
+    /**
+     * render one page on one screen
+     */
     fun getBitmap(index: Int): Bitmap {
         curPage = pdfRenderer.openPage(index)
         val bitmap = FileUtil.getBitmapFromScreen(curPage)
@@ -55,6 +54,9 @@ object Descriptor {
         return bitmap
     }
 
+    /**
+     * render two pages on one screen
+     */
     fun getTwoBitmaps(index: Int): Bitmap {
         //todo check num pages to correct indexes
         var pagecount = pdfRenderer.pageCount
@@ -72,6 +74,6 @@ object Descriptor {
             curPage1.close()
             list.add(1, bitmap1)
         }
-        return FileUtil.combineImageIntoOne(list)
+        return FileUtil.combineImagesIntoOne(list)
     }
 }

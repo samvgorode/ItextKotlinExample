@@ -87,10 +87,18 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener, BaseFragment.Fragm
         super.onDestroyView()
     }
 
+    /**
+     * show two pages when device is rotated
+     * to landscape mode
+     */
     private fun displayTwoPages(index: Int) {
         imgView?.setImageBitmap(Descriptor.getTwoBitmaps(index))
     }
 
+    /**
+     * show one page when device is rotated
+     * to portrait mode
+     */
     fun displayPage(index: Int) {
         imgView?.setImageBitmap(Descriptor.getBitmap(index))
     }
@@ -108,6 +116,11 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener, BaseFragment.Fragm
         }
     }
 
+    /**
+     * orientationManager for rendering
+     * one PDF page in vertical
+     * and two pages in landscape mode
+     */
     fun setupOrientationManager() {
         if (!orientationManager.isActive()) {
             orientationManager.setListener(listener = object : OrientationManager.VerticalListener {
@@ -131,6 +144,10 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener, BaseFragment.Fragm
         }
     }
 
+    /**
+     * method for different gestures
+     * of top icons
+     */
     @SuppressLint("ClickableViewAccessibility")
     fun setTouchTopImage(image: ImageView) {
         buttonLink.post { duplicateView(buttonLink) }
@@ -147,6 +164,10 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener, BaseFragment.Fragm
         })
     }
 
+    /**
+     * with this method we can add image
+     * for top icons and let it be draggable
+     */
     @SuppressLint("ClickableViewAccessibility")
     private fun duplicateView(imageView: ImageView?) {
         val image = ImageView(context)
@@ -165,6 +186,12 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener, BaseFragment.Fragm
         dynamicList.add(image)
     }
 
+
+    /**
+     * Example of how to replace existing
+     * link in PDF document with another link
+     * we use there com.qoppa.android library
+     */
     private fun replaceLink() {
         try {
             val pdfDoc = PDFDocument(path, null)
@@ -191,6 +218,13 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener, BaseFragment.Fragm
         }
     }
 
+    /**
+     * Example of how to add image
+     * to PDF document with coordinates
+     * we use there itext5 library
+     * read itext5 docs
+     * https://developers.itextpdf.com/examples/image-examples-itext5/adding-image-existing-file
+     */
     private fun addDataToPdf() {
         /*newView = ImageView(context)
         newView.setImageResource(R.drawable.screenshot_5)
@@ -215,9 +249,16 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener, BaseFragment.Fragm
          over.addImage(image)
          stamper.close()
          reader.close()
+         // here we rewrite file and save it simultaneously
          FileUtil.rewriteFile(tempPdfPath, path)*/
     }
 
+
+    /**
+     * Example of how can we render
+     * our PDF page with native QPDFNotesView
+     * from com.qoppa.android library
+     */
     private fun showQoppaView() {
         /*
          val viewer = QPDFNotesView(context)

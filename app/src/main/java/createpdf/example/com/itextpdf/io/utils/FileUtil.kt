@@ -28,6 +28,9 @@ object FileUtil {
         list.clear()
     }
 
+    /**
+     * get all PDF files from device
+     */
     fun getListPdfFiles(absolutePath: String): ArrayList<PdfFile> {
 
         try {
@@ -50,6 +53,10 @@ object FileUtil {
         return list
     }
 
+    /**
+     * save current screen (View or ViewGroup)
+     * as PDF page
+     */
     fun saveCurrentPage(context: Activity, view: View) {
         val displaymetrics = DisplayMetrics()
         context.windowManager.defaultDisplay.getMetrics(displaymetrics)
@@ -122,7 +129,10 @@ object FileUtil {
         }
     }
 
-    fun combineImageIntoOne(bitmap: ArrayList<Bitmap>): Bitmap {
+    /**
+     * showing two bitmaps one next to another
+     */
+    fun combineImagesIntoOne(bitmap: ArrayList<Bitmap>): Bitmap {
         var w = 0
         var h = 0
         for (i in 0 until bitmap.size) {
