@@ -7,6 +7,8 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.FrameLayout
 import android.widget.ImageView
 import com.qoppa.android.pdf.annotations.Link
@@ -17,6 +19,7 @@ import createpdf.example.com.itextpdf.R
 import createpdf.example.com.itextpdf.io.manager.OrientationManager
 import createpdf.example.com.itextpdf.io.utils.Constants
 import createpdf.example.com.itextpdf.ui.uibase.fragment.BaseFragment
+import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.fragment_pdf_page.*
 import java.util.*
 import javax.inject.Inject
@@ -28,7 +31,7 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
     private val tempPdfPath = Environment.getExternalStorageDirectory().absolutePath + "/tempPdfFile.pdf"
     private lateinit var newView: ImageView
     private lateinit var path: String
-
+    private var vertical: Boolean = false
 
     companion object {
         fun newInstance(path: String, index: Int): PdfPageFragment {
@@ -58,10 +61,14 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
         if (!orientationManager.isActive()) {
             orientationManager.setListener(listener = object : OrientationManager.VerticalListener {
                 override fun changed(isVertical: Boolean) {
-                    if (isVertical ) {
-                        if(currentPage != -1)displayPage(currentPage)
+                    vertical = if (isVertical ) {
+                        if(!vertical)
+                            if(currentPage != -1)displayPage(currentPage)
+                        true
                     } else {
-                        if(currentPage != -1)displayTwoPages(currentPage)
+                        if(vertical)
+                            if(currentPage != -1)displayTwoPages(currentPage)
+                        false
                     }
                 }
             })
@@ -71,18 +78,11 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun displayTwoPages(index: Int) {
-        if(index%2==0) {
-            imgView.setImageBitmap(Descriptor.getTwoBitmaps(index)[0])
-            imgView1.setImageBitmap(Descriptor.getTwoBitmaps(index)[1])
-        }else {
-            imgView.setImageBitmap(Descriptor.getTwoBitmaps(index)[1])
-            imgView1.setImageBitmap(Descriptor.getTwoBitmaps(index)[0])
-        }
-//
+        imgView?.setImageBitmap(Descriptor.getTwoBitmaps(index))
     }
 
     fun displayPage(index: Int) {
-        imgView.setImageBitmap(Descriptor.getBitmap(index))
+        imgView?.setImageBitmap(Descriptor.getBitmap(index))
     }
 
     private fun setOnClickTouchListeners() {

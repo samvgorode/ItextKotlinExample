@@ -21,7 +21,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="createpdf.example.com.itextpdf.ui.uiall.editfile.PdfPageActivity">
+        <activity android:name="createpdf.example.com.itextpdf.ui.uiall.editfile.PdfPageActivity"
+            android:configChanges="orientation|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

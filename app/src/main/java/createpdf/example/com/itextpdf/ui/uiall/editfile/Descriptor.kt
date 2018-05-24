@@ -37,8 +37,8 @@ object Descriptor {
     fun closePdfRenderer() {
         if (descriptorCreated) {
             try {
-                curPage.close()
-                curPage1.close()
+//                curPage.close()
+//                curPage1.close()
                 pdfRenderer.close()
                 descriptor.close()
             } catch (e: IOException) {
@@ -55,8 +55,8 @@ object Descriptor {
         return bitmap
     }
 
-    fun getTwoBitmaps(index: Int): List<Bitmap> {
-        var list = ArrayList<Bitmap>()
+    fun getTwoBitmaps(index: Int): Bitmap {
+        val list = ArrayList<Bitmap>()
         curPage = pdfRenderer.openPage(index)
         val bitmap = FileUtil.getBitmapFromScreen(curPage)
         curPage.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
@@ -73,6 +73,6 @@ object Descriptor {
         curPage1.close()
         list.add(0, bitmap)
         list.add(1, bitmap1)
-        return list
+        return FileUtil.combineImageIntoOne(list)
     }
 }

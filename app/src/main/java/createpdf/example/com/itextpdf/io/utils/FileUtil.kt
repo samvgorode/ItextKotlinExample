@@ -13,6 +13,11 @@ import createpdf.example.com.itextpdf.R
 import createpdf.example.com.itextpdf.io.pojo.PdfFile
 import java.io.*
 import java.util.*
+import android.opengl.ETC1.getHeight
+import java.nio.file.Files.size
+import android.graphics.Bitmap
+
+
 
 
 object FileUtil {
@@ -115,5 +120,23 @@ object FileUtil {
                 input.copyTo(fileOut)
             }
         }
+    }
+
+    fun combineImageIntoOne(bitmap: ArrayList<Bitmap>): Bitmap {
+        var w = 0
+        var h = 0
+        for (i in 0 until bitmap.size) {
+            w += bitmap[i].width
+            h = bitmap[i].height
+        }
+        val temp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(temp)
+        var top = 0f
+        var left = 0f
+        for (i in 0 until bitmap.size) {
+            canvas.drawBitmap(bitmap[i], left, top, null)
+            left += bitmap[i].width
+        }
+        return temp
     }
 }
