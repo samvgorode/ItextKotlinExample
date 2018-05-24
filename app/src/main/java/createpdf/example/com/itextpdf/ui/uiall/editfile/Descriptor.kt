@@ -56,6 +56,7 @@ object Descriptor {
     }
 
     fun getTwoBitmaps(index: Int): Bitmap {
+        //todo check num pages to correct indexes
         val list = ArrayList<Bitmap>()
         curPage = pdfRenderer.openPage(index)
         val bitmap = FileUtil.getBitmapFromScreen(curPage)

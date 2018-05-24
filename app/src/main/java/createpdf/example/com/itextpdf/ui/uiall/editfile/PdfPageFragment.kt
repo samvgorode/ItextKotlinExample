@@ -1,6 +1,8 @@
 package createpdf.example.com.itextpdf.ui.uiall.editfile
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Environment
 import android.support.v4.content.ContextCompat
@@ -25,7 +27,15 @@ import java.util.*
 import javax.inject.Inject
 
 
-class PdfPageFragment : BaseFragment(), View.OnClickListener {
+class PdfPageFragment : BaseFragment(), View.OnClickListener, BaseFragment.FragmentLifecycle {
+
+    override fun onPauseFragment() {
+        orientationManager.disable()
+    }
+
+    override fun onResumeFragment() {
+//        if(!orientationManager.isActive())orientationManager.enable()
+    }
 
     private var currentPage = 0
     private val tempPdfPath = Environment.getExternalStorageDirectory().absolutePath + "/tempPdfFile.pdf"
@@ -58,23 +68,12 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        if (!orientationManager.isActive()) {
-            orientationManager.setListener(listener = object : OrientationManager.VerticalListener {
-                override fun changed(isVertical: Boolean) {
-                    vertical = if (isVertical ) {
-                        if(!vertical)
-                            if(currentPage != -1)displayPage(currentPage)
-                        true
-                    } else {
-                        if(vertical)
-                            if(currentPage != -1)displayTwoPages(currentPage)
-                        false
-                    }
-                }
-            })
-            orientationManager.enable()
+        if(activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_PORTRAIT){
+            displayPage(currentPage)
+        } else if(activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            displayTwoPages(currentPage)
         }
-
+        setupOrientationManager()
     }
 
     private fun displayTwoPages(index: Int) {
@@ -95,6 +94,25 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v) {
             buttonSavePage -> addDataToPdf()
+        }
+    }
+
+    fun setupOrientationManager(){
+        if (!orientationManager.isActive()) {
+            orientationManager.setListener(listener = object : OrientationManager.VerticalListener {
+                override fun changed(isVertical: Boolean) {
+                    vertical = if (isVertical ) {
+                        if(!vertical)
+                            if(currentPage != -1)displayPage(currentPage)
+                        true
+                    } else {
+                        if(vertical)
+                            if(currentPage != -1)displayTwoPages(currentPage)
+                        false
+                    }
+                }
+            })
+            orientationManager.enable()
         }
     }
 

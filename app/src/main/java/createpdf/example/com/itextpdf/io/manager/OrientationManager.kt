@@ -11,10 +11,10 @@ class OrientationManager(context : Context) : OrientationEventListener(context) 
     private var isActive: Boolean = false
 
     override fun onOrientationChanged(orientation: Int) {
-        if (orientation < 60 || orientation > 300) {
+        if (orientation < 30 || orientation > 330) {
             isVertical = true
             listener?.changed(true)
-        } else if (orientation in 61..299) {
+        } else if (orientation in 30..330) {
             isVertical = false
             listener?.changed(false)
         }

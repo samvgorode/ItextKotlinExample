@@ -32,4 +32,8 @@ abstract class BaseFragment : Fragment() {
 
     fun setLayout(layout: Int) { this.layout = layout }
 
+    interface FragmentLifecycle {
+        fun onPauseFragment()
+        fun onResumeFragment()
+    }
 }

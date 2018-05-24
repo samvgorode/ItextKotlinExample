@@ -21,6 +21,10 @@ import createpdf.example.com.itextpdf.ui.uiinterfaces.PdfPageView
 import kotlinx.android.synthetic.main.activity_pdf.*
 import java.io.IOException
 import java.util.*
+import createpdf.example.com.itextpdf.ui.uibase.fragment.BaseFragment.FragmentLifecycle
+import android.support.v4.view.ViewPager.OnPageChangeListener
+
+
 
 
 class PdfPageActivity : MvpAppCompatActivity(), PdfPageView {
@@ -51,7 +55,8 @@ class PdfPageActivity : MvpAppCompatActivity(), PdfPageView {
         path = intent.getStringExtra(Constants.FILEPATH_INTENT_EXTRA)
         adapter = ViewPagerAdapter(supportFragmentManager)
         pager.adapter = adapter
-        pager.offscreenPageLimit = 3
+        pager.offscreenPageLimit = 0
+        pager.addOnPageChangeListener(pageChangeListener)
     }
 
     private fun fillAdapter() {
@@ -88,5 +93,25 @@ class PdfPageActivity : MvpAppCompatActivity(), PdfPageView {
 
     override fun onBackPressed() {
         finish()
+    }
+
+    private val pageChangeListener = object : OnPageChangeListener {
+
+        internal var currentPosition = 0
+
+        override fun onPageSelected(newPosition: Int) {
+
+            val fragmentToShow = adapter.getItem(newPosition) as PdfPageFragment
+            fragmentToShow.onResumeFragment()
+
+            val fragmentToHide = adapter.getItem(currentPosition) as PdfPageFragment
+            fragmentToHide.onPauseFragment()
+
+            currentPosition = newPosition
+        }
+
+        override fun onPageScrolled(arg0: Int, arg1: Float, arg2: Int) {}
+
+        override fun onPageScrollStateChanged(arg0: Int) {}
     }
 }
