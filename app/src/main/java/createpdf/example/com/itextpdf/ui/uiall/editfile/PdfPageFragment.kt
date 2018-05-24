@@ -1,7 +1,6 @@
 package createpdf.example.com.itextpdf.ui.uiall.editfile
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Environment
@@ -9,8 +8,6 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.widget.FrameLayout
 import android.widget.ImageView
 import com.qoppa.android.pdf.annotations.Link
@@ -24,24 +21,18 @@ import createpdf.example.com.itextpdf.ui.uibase.fragment.BaseFragment
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.fragment_pdf_page.*
 import java.util.*
-import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 class PdfPageFragment : BaseFragment(), View.OnClickListener, BaseFragment.FragmentLifecycle {
 
-    override fun onPauseFragment() {
-        orientationManager.disable()
-    }
-
-    override fun onResumeFragment() {
-//        if(!orientationManager.isActive())orientationManager.enable()
-    }
 
     private var currentPage = 0
     private val tempPdfPath = Environment.getExternalStorageDirectory().absolutePath + "/tempPdfFile.pdf"
     private lateinit var newView: ImageView
     private lateinit var path: String
     private var vertical: Boolean = false
+    var dynamicList = ArrayList<ImageView>()
 
     companion object {
         fun newInstance(path: String, index: Int): PdfPageFragment {
@@ -52,6 +43,14 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener, BaseFragment.Fragm
             fragment.arguments = bundle
             return fragment
         }
+    }
+
+    override fun onPauseFragment() {
+        orientationManager.disable()
+    }
+
+    override fun onResumeFragment() {
+//        if(!orientationManager.isActive())orientationManager.enable()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,14 +65,26 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener, BaseFragment.Fragm
         showQoppaView()
     }
 
+    private fun clearDynamicList() {
+        if(dynamicList.size > 0)
+        for(view : ImageView in dynamicList){
+            frameRoot.removeView(view)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
-        if(activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_PORTRAIT){
+        if (activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_PORTRAIT) {
             displayPage(currentPage)
-        } else if(activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_LANDSCAPE){
+        } else if (activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             displayTwoPages(currentPage)
         }
         setupOrientationManager()
+    }
+
+    override fun onDestroyView() {
+        clearFindViewByIdCache()
+        super.onDestroyView()
     }
 
     private fun displayTwoPages(index: Int) {
@@ -97,17 +108,21 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener, BaseFragment.Fragm
         }
     }
 
-    fun setupOrientationManager(){
+    fun setupOrientationManager() {
         if (!orientationManager.isActive()) {
             orientationManager.setListener(listener = object : OrientationManager.VerticalListener {
                 override fun changed(isVertical: Boolean) {
-                    vertical = if (isVertical ) {
-                        if(!vertical)
-                            if(currentPage != -1)displayPage(currentPage)
+                    vertical = if (isVertical) {
+                        if (!vertical){
+                            clearDynamicList()
+                            if (currentPage != -1) displayPage(currentPage)
+                        }
                         true
                     } else {
-                        if(vertical)
-                            if(currentPage != -1)displayTwoPages(currentPage)
+                        if (vertical){
+                            clearDynamicList()
+                            if (currentPage != -1) displayTwoPages(currentPage)
+                        }
                         false
                     }
                 }
@@ -147,6 +162,7 @@ class PdfPageFragment : BaseFragment(), View.OnClickListener, BaseFragment.Fragm
 //        image.adjustViewBounds = true
 //        image.scaleType = ImageView.ScaleType.FIT_XY
         image.setOnTouchListener(TouchEventListener(context!!, false))
+        dynamicList.add(image)
     }
 
     private fun replaceLink() {
